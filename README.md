@@ -8,7 +8,7 @@ This scripts require python3.5+
 
 See requirements.txt for a dependencies requirements.
 
-# How to run script on linux
+# How to run script
 
 ```bash
 $python seek_dev_nighters.py 
