@@ -4,8 +4,7 @@ This script loads information from devman.org api and prints users, who send the
 
 # Requirements
 
-This scripts require python3.5+
-
+This scripts require python3.5+  
 See requirements.txt for a dependencies requirements.
 
 # How to run script
