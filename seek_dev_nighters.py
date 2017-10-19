@@ -5,13 +5,18 @@ import requests
 
 def load_attempts():
 
-    api_url = 'https://devman.org/api/challenges/solution_attempts/?page={}'
-    number_of_pages = requests.get(api_url.format(1)).json()['number_of_pages']
+    api_url = 'https://devman.org/api/challenges/solution_attempts/'
+
+    number_of_pages = requests.get(
+        api_url,
+        params={'page': '1'}
+        ).json()['number_of_pages']
 
     for page in range(number_of_pages):
 
         current_page_records = requests.get(
-                api_url.format(page+1)
+                api_url,
+                params={'page': str(page+1)}
             ).json()['records']
 
         for attempts_record in current_page_records:
@@ -20,6 +25,7 @@ def load_attempts():
 
 def get_midnighters():
 
+    midnight_hour = 0
     server_timezone = pytz.timezone('Europe/Moscow')
 
     for attempts_record in load_attempts():
@@ -29,7 +35,7 @@ def get_midnighters():
         client_timezone = pytz.timezone(attempts_record['timezone'])
         client_datetime = server_datetime.astimezone(client_timezone)
 
-        if client_datetime.hour == 0:
+        if client_datetime.hour == midnight_hour:
             yield attempts_record
 
 
