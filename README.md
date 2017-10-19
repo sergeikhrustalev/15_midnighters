@@ -1,10 +1,11 @@
 # Night Owls Detector
 
-This script loads information from devman.org api and prints table of users, who send their tasks for a verification after 24:00. 
+This script loads information from devman.org api and prints users, who send their tasks for a verification after 24:00. 
 
 # Requirements
 
 This scripts require python3.5+
+
 See requirements.txt for a dependencies requirements.
 
 # How to run script on linux
