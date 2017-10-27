@@ -15,7 +15,7 @@ def load_page(page_number):
 
 def get_attempts_record():
 
-    first_page = load_page(1)
+    first_page = load_page('1')
 
     yield from first_page['records']
 
