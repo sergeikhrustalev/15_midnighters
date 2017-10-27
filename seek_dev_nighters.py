@@ -23,7 +23,7 @@ def get_attempts_record():
 
     for page in range(2, number_of_pages+1):
 
-        yield from load_page(page)['records']
+        yield from load_page(str(page))['records']
 
 
 def is_midnighter(attempts_record, start_hour=0, end_hour=4):
