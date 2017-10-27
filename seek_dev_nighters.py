@@ -3,40 +3,43 @@ import pytz
 import requests
 
 
-def load_attempts():
+def load_page(page_number):
 
     api_url = 'https://devman.org/api/challenges/solution_attempts/'
 
-    number_of_pages = requests.get(
+    return requests.get(
         api_url,
-        params={'page': '1'}
-        ).json()['number_of_pages']
-
-    for page in range(number_of_pages):
-
-        current_page_records = requests.get(
-                api_url,
-                params={'page': str(page+1)}
-            ).json()['records']
-
-        for attempts_record in current_page_records:
-            yield attempts_record
+        params={'page': page_number}
+    ).json()
 
 
-def get_midnighters():
+def get_attempts_record():
 
-    midnight_hour = 0
+    first_page = load_page(1)
+
+    yield from first_page['records']
+
+    number_of_pages = first_page['number_of_pages']
+
+    for page in range(2, number_of_pages+1):
+
+        yield from load_page(page)['records']
+
+
+def is_midnighter(attempts_record, start_hour=0, end_hour=4):
+
     server_timezone = pytz.timezone('Europe/Moscow')
 
-    for attempts_record in load_attempts():
+    server_datetime = server_timezone.localize(
+        datetime.fromtimestamp(attempts_record['timestamp'])
+    )
 
-        server_datetime = server_timezone.localize(
-            datetime.fromtimestamp(attempts_record['timestamp']))
-        client_timezone = pytz.timezone(attempts_record['timezone'])
-        client_datetime = server_datetime.astimezone(client_timezone)
+    client_timezone = pytz.timezone(attempts_record['timezone'])
 
-        if client_datetime.hour == midnight_hour:
-            yield attempts_record
+    client_datetime = server_datetime.astimezone(client_timezone)
+
+    return client_datetime.hour >= start_hour \
+        and client_datetime.hour <= end_hour
 
 
 if __name__ == '__main__':
@@ -44,9 +47,12 @@ if __name__ == '__main__':
     print('Users who send their tasks for a verification after 24:00.')
     print('First column is sent datetime, second is username')
 
-    for attempts_records in get_midnighters():
+    for attempts_record in get_attempts_record():
 
-        client_datetime = datetime.fromtimestamp(
-            attempts_records['timestamp']).strftime('%d.%m.%Y %H.%M.%S')
+        if is_midnighter(attempts_record):
 
-        print(client_datetime, '\t', attempts_records['username'])
+            client_datetime = datetime.fromtimestamp(
+                attempts_record['timestamp']
+            ).strftime('%d.%m.%Y %H.%M.%S')
+
+            print(client_datetime, '\t', attempts_record['username'])
