@@ -1,4 +1,5 @@
 from datetime import datetime
+
 import pytz
 import requests
 
@@ -13,7 +14,7 @@ def load_page(page_number):
     ).json()
 
 
-def get_attempts_record():
+def get_attempt_records():
 
     page_number = 1
     first_page = load_page(page_number)
@@ -23,11 +24,10 @@ def get_attempts_record():
     number_of_pages = first_page['number_of_pages']
 
     for page in range(2, number_of_pages+1):
-
         yield from load_page(page)['records']
 
 
-def is_midnighter(attempts_record, start_hour=0, end_hour=4):
+def is_midnighter(attempt_record, start_hour=0, end_hour=4):
 
     server_timezone = pytz.timezone('Europe/Moscow')
 
@@ -48,12 +48,12 @@ if __name__ == '__main__':
     print('Users who send their tasks for a verification after 24:00.')
     print('First column is sent datetime, second is username')
 
-    for attempts_record in get_attempts_record():
+    for attempt_record in get_attempt_records():
 
-        if is_midnighter(attempts_record):
+        if is_midnighter(attempt_record):
 
             client_datetime = datetime.fromtimestamp(
                 attempts_record['timestamp']
             ).strftime('%d.%m.%Y %H.%M.%S')
 
-            print(client_datetime, '\t', attempts_record['username'])
+            print(client_datetime, '\t', attempt_record['username'])
