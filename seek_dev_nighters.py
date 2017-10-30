@@ -32,10 +32,10 @@ def is_midnighter(attempt_record, start_hour=0, end_hour=4):
     server_timezone = pytz.timezone('Europe/Moscow')
 
     server_datetime = server_timezone.localize(
-        datetime.fromtimestamp(attempts_record['timestamp'])
+        datetime.fromtimestamp(attempt_record['timestamp'])
     )
 
-    client_timezone = pytz.timezone(attempts_record['timezone'])
+    client_timezone = pytz.timezone(attempt_record['timezone'])
 
     client_datetime = server_datetime.astimezone(client_timezone)
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         if is_midnighter(attempt_record):
 
             client_datetime = datetime.fromtimestamp(
-                attempts_record['timestamp']
+                attempt_record['timestamp']
             ).strftime('%d.%m.%Y %H.%M.%S')
 
             print(client_datetime, '\t', attempt_record['username'])
